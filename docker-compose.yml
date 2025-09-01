@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  # n8n - مركز التحكم الرئيسي
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: symphony-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=Symphony2025
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - NODE_ENV=production
+      - WEBHOOK_URL=http://localhost:5678/
+      - N8N_LOG_LEVEL=info
+      - N8N_METRICS=true
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=n8n
+      - DB_POSTGRESDB_PASSWORD=n8n_symphony_2025
+    volumes:
+      - ./n8n-orchestrator:/home/node/.n8n
+      - ./workflows:/workflows
+      - ./ai-models:/ai-models:ro
+      - ../dynamic-ai-agents-manager-premium:/legacy:ro
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - symphony-network
+
+  # PostgreSQL لتخزين workflows
+  postgres:
+    image: postgres:15-alpine
+    container_name: symphony-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=n8n
+      - POSTGRES_PASSWORD=n8n_symphony_2025
+      - POSTGRES_DB=n8n
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U n8n"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - symphony-network
+
+  # Redis للـ caching والـ queuing
+  redis:
+    image: redis:7-alpine
+    container_name: symphony-cache
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass symphony_redis_2025
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - symphony-network
+
+volumes:
+  postgres-data:
+  redis-data:
+
+networks:
+  symphony-network:
+    driver: bridge
+    name: symphony-network

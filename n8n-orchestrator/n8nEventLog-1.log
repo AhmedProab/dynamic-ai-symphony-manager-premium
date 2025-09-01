@@ -1,0 +1,2 @@
+{"__type":"$$EventMessageAudit","id":"37223cf4-94ba-445f-b2c7-86d4d9b79e90","ts":"2025-08-31T08:06:39.939+00:00","eventName":"n8n.audit.user.api.deleted","message":"n8n.audit.user.api.deleted","payload":{"userId":"4d96ff80-ac3a-4430-b6e4-d3de31c0a016","_email":"imssu.ecom@gmail.com","_firstName":"ahmed","_lastName":"ABDULLAH","globalRole":"global:owner"}}
+{"__type":"$$EventMessageConfirm","confirm":"37223cf4-94ba-445f-b2c7-86d4d9b79e90","ts":"2025-08-31T08:06:39.949+00:00","source":{"id":"0","name":"eventBus"}}

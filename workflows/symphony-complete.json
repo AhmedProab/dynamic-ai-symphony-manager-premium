@@ -1,0 +1,131 @@
+{
+  "name": "🚀 Symphony AI Assistant - Complete System",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "chat_trigger",
+      "name": "Chat Interface",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1,
+      "position": [250, 500],
+      "webhookId": "symphony-chat"
+    },
+    {
+      "parameters": {
+        "name": "Master AI Agent",
+        "description": "المدير الرئيسي للنظام",
+        "promptType": "define",
+        "text": "You are the master orchestrator of a Shopify store. You manage:\n1. Sales and orders\n2. Customer support\n3. Inventory\n4. Analytics\n\nRoute queries to appropriate sub-agents.",
+        "options": {
+          "systemMessage": "You are an intelligent Shopify store manager.",
+          "temperature": 0.7,
+          "maxTokens": 2000
+        }
+      },
+      "id": "master_agent",
+      "name": "Master AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1,
+      "position": [550, 500]
+    },
+    {
+      "parameters": {
+        "name": "Sales Tool",
+        "description": "Handle sales, discounts, and promotions"
+      },
+      "id": "sales_tool",
+      "name": "Sales Agent Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolAgent",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "name": "Support Tool",
+        "description": "Handle customer questions and issues"
+      },
+      "id": "support_tool",
+      "name": "Support Agent Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolAgent",
+      "typeVersion": 1,
+      "position": [850, 500]
+    },
+    {
+      "parameters": {
+        "name": "Analytics Tool",
+        "description": "Provide store insights and reports"
+      },
+      "id": "analytics_tool",
+      "name": "Analytics Agent Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolAgent",
+      "typeVersion": 1,
+      "position": [850, 700]
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "symphony_session"
+      },
+      "id": "memory",
+      "name": "Chat Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1,
+      "position": [550, 700]
+    }
+  ],
+  "connections": {
+    "Chat Interface": {
+      "main": [
+        [
+          {
+            "node": "Master AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Master AI Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Sales Agent Tool",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Support Agent Tool",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Analytics Agent Tool",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ],
+      "ai_memory": [
+        [
+          {
+            "node": "Chat Memory",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false
+}
